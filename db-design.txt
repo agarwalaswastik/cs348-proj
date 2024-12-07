@@ -17,3 +17,39 @@ Tables:
     doctorId (FOREIGN KEY, references Doctors.id)
     date (TIMESTAMP NOT NULL)
     duration (INTEGER)
+
+
+Indexes:
+  idx_appointments_date_clustered on date in Appointments:
+    This index helps in the queries to on my reports tab.
+
+    I have 2 queries on this tab that will benefit from this index:
+      1) SELECT
+          a.id,
+          a.date,
+          a.duration,
+          d.name AS doctor_name,
+          p.name AS patient_name,
+          a.date
+        FROM "Appointments" a
+        JOIN "Doctors" d ON a."doctorId" = d.id
+        JOIN "Patients" p ON a."patientId" = p.id
+        WHERE (:startDate IS NULL OR a.date >= :startDate)
+        AND (:endDate IS NULL OR a.date <= :endDate)
+        AND (:doctorId IS NULL OR a."doctorId" = :doctorId)
+
+      2) SELECT 
+          AVG(a.duration) AS avg_duration,
+          AVG(p.age) AS avg_age
+        FROM "Appointments" a
+        JOIN "Doctors" d ON a."doctorId" = d.id
+        JOIN "Patients" p ON a."patientId" = p.id
+        WHERE (:startDate IS NULL OR a.date >= :startDate)
+        AND (:endDate IS NULL OR a.date <= :endDate)
+        AND (:doctorId IS NULL OR a."doctorId" = :doctorId)
+
+    The first query retrieves data about appointments that lie between
+    a certain startDate and endDate. A clustered index on date helps with the results
+    of this query.
+
+    The second query uses similar conditions and will also use the index.
