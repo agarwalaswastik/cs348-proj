@@ -1,0 +1,19 @@
+Database: PostgreSQL
+
+Tables:
+  Patients:
+    id (PRIMARY KEY, SERIAL)
+    name (VARCHAR(255))
+    age (INTEGER)
+
+  Doctors:
+    id (PRIMARY KEY SERIAL)
+    name (VARCHAR(255) NOT NULL)
+    specialization (VARCHAR(255) NOT NULL)
+
+  Appointments:
+    id (PRIMARY KEY SERIAL)
+    patientId (FOREIGN KEY, references Patients.id)
+    doctorId (FOREIGN KEY, references Doctors.id)
+    date (TIMESTAMP NOT NULL)
+    duration (INTEGER)
