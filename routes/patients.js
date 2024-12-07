@@ -1,5 +1,6 @@
 import express from "express";
 import Patient from "../models/Patient.js";
+import Appointment from "../models/Appointment.js";
 
 const router = express.Router();
 
@@ -52,6 +53,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const patient = await Patient.findByPk(id);
     if (patient) {
+      await Appointment.destroy({ where: { patientId: id } });
       await patient.destroy();
       res.json({ message: "Patient deleted" });
     } else {
